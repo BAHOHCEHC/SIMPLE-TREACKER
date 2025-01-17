@@ -1,0 +1,68 @@
+[
+  {
+    "id": 173731245113390340,
+    "name": "ClientA",
+    "user": "wwwwwwwww",
+    "tarif": 15,
+    "currency": "USD",
+    "totalHours": 120,
+    "archivedTime": 30,
+    "totalPayment": 1800,
+    "taskList": [
+      {
+        "name": "Task 111",
+        "wasteTime": 2,
+        "totalCost": 30
+      },
+      {
+        "name": "Task 222222",
+        "wasteTime": 2,
+        "totalCost": 30
+      }
+    ]
+  },
+  {
+    "id": 173711231413390340,
+    "name": "Client B",
+    "user": "wwwwwwwww",
+    "tarif": 20,
+    "currency": "EUR",
+    "totalHours": 80,
+    "archivedTime": 15,
+    "totalPayment": 1600,
+    "taskList": [
+      {
+        "name": "Task 33333",
+        "wasteTime": 15,
+        "totalCost": 200
+      },
+      {
+        "name": "Task 1111",
+        "wasteTime": 15,
+        "totalCost": 200
+      },
+      {
+        "name": "Task 22222",
+        "wasteTime": 15,
+        "totalCost": 200
+      }
+    ]
+  },
+  {
+    "id": 1737113390346,
+    "name": "qqqqqqqqqqqqqqqqqqqqq",
+    "user": "ssssssssss",
+    "tarif": 20,
+    "currency": "EUR",
+    "totalHours": 80,
+    "archivedTime": 15,
+    "totalPayment": 1600,
+    "taskList": [
+      {
+        "name": "wwwwwwwwwwwwww",
+        "wasteTime": 15,
+        "totalCost": 200
+      }
+    ]
+  }
+]
