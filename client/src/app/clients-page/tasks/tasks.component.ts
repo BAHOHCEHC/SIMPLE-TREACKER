@@ -121,8 +121,6 @@ export class TasksComponent implements OnInit, OnDestroy {
             time: this.hourPipe.transform(task.wastedTime),
           })),
         }));
-
-
       })
     );
   }
