@@ -8,7 +8,7 @@ const DATA_PATH = path.join(__dirname, "../DB/tasks.json");
 
 // Получить все задачи
 // http://localhost:5000/api/tasks/getAll
-router.get("/getAll", (req, res) => {
+router.get("/getall", (req, res) => {
   fs.readFile(DATA_PATH, "utf8", (err, data) => {
     if (err) return res.status(500).json({ message: "Error reading data" });
     res.json(JSON.parse(data));

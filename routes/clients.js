@@ -74,12 +74,12 @@ router.delete("/:id", async (req, res) => {
     const clients = await readData(CLIENTS_DATA_PATH);
     const tasks = await readData(TASKS_DATA_PATH);
 
-    const updatedClients = clients.filter(
-      (client) => client.id !== parseInt(req.params.id)
-    );
-    const updatedTasks = tasks.filter(
-      (task) => task.clientId !== req.params.id
-    );
+    const updatedClients = clients.filter((client) => {
+      client.name !== req.params.id;
+    });
+    const updatedTasks = tasks.filter((task) => {
+      task.clientName !== req.params.id;
+    });
 
     await writeData(CLIENTS_DATA_PATH, updatedClients);
     await writeData(TASKS_DATA_PATH, updatedTasks);

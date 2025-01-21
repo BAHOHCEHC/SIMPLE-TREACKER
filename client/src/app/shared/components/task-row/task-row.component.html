@@ -1,0 +1,177 @@
+<form
+  [formGroup]="formTask"
+  #task
+  class="formNewTask_top"
+  (ngSubmit)="onSubmit()"
+>
+  <div class="dfl ai">
+    <input
+      class="dibl task_inputs"
+      formControlName="name"
+      type="text"
+      [readonly]="readonlyParam"
+      placeholder="Task name"
+    />
+
+    <div class="groupInputWrapper groupInputWrapper-left dfl ai" *ngIf="isNew">
+      <input
+        [readonly]="readonlyParam"
+        class="dibl task_inputs dayStart"
+        formControlName="dayStart"
+        type="text"
+        #dayStart
+        placeholder="Today"
+      />
+    </div>
+    <div
+      class="groupInputWrapper groupInputWrapper-right dfl ai"
+      [ngClass]="{
+        msg_error: formTask.get('timeStart')?.dirty && timeLessError(),
+        groupInputWrapper_client_statistic: readonlyParam
+      }"
+    >
+      <span
+        class="red-text pa error_msg"
+        *ngIf="formTask.get('timeStart')?.dirty && timeLessError()">Time is wrong</span>
+
+      <timepicker
+        [minuteStep]="1"
+        class="timepicker"
+        formControlName="timeStart"
+        [showMeridian]="false"
+        [showSpinners]="false"
+        [readonlyInput]="readonlyParam"
+        (ngModelChange)="changed()"
+        #timepikerStart
+      ></timepicker>
+    </div>
+
+    <svg
+      width="14"
+      height="8"
+      viewBox="0 0 14 8"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 4H13M13 4L10 1M13 4L10 7"
+        stroke="#212121"
+        stroke-opacity="0.15"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+
+    <div
+      class="groupInputWrapper groupInputWrapper-right dfl ai"
+      [ngClass]="{
+        msg_error: formTask.get('timeEnd')?.dirty && timeLessError(),
+        groupInputWrapper_client_statistic: readonlyParam
+      }"
+    >
+      <span
+        class="red-text pa error_msg"
+        *ngIf="formTask.get('timeEnd')?.dirty && timeLessError()"
+        >Time is wrong</span>
+      <timepicker
+        [minuteStep]="1"
+        class="timepicker"
+        formControlName="timeEnd"
+        [showMeridian]="false"
+        [showSpinners]="false"
+        [readonlyInput]="readonlyParam"
+        (ngModelChange)="changed()"
+        #timepikerEnd>
+      </timepicker>
+    </div>
+
+    <div class="task_spended_time tac color_black_text" *ngIf="!isNew">
+      {{ taskData?.wastedTime || 0 | hourPipe }}
+    </div>
+
+    <button
+      class="modal-action dibl newTaskBtn"
+      type="submit"
+      [disabled]="formTask.invalid || submitted || timeLessError() || !isEditNow"
+      *ngIf="!readonlyParam">
+      <svg
+        *ngIf="isNew"
+        width="40"
+        height="40"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <rect width="40" height="40" rx="20" fill="#00BCD4" />
+        <path
+          d="M16.818 26L16.2886 26.5313C16.5815 26.8231 17.0552 26.8229 17.3478 26.5308L16.818 26ZM11.6905 19.8327C11.3971 19.5403 10.9222 19.5412 10.6298 19.8346C10.3375 20.128 10.3383 20.6029 10.6318 20.8953L11.6905 19.8327ZM29.3687 14.5308C29.6618 14.2382 29.6622 13.7633 29.3696 13.4701C29.077 13.177 28.6021 13.1766 28.3089 13.4692L29.3687 14.5308ZM17.3473 25.4687L11.6905 19.8327L10.6318 20.8953L16.2886 26.5313L17.3473 25.4687ZM17.3478 26.5308L29.3687 14.5308L28.3089 13.4692L16.2881 25.4692L17.3478 26.5308Z"
+          fill="white"
+        />
+      </svg>
+
+      <svg
+        *ngIf="!isNew"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="10"
+          cy="10"
+          r="9.25"
+          [attr.stroke]="!isEditNow ? '#BCBCBC' : '#00BCD4'"
+          stroke-width="1.5"
+        />
+        <path
+          d="M8.87999 13L8.35546 13.5361C8.64677 13.8211 9.1124 13.8213 9.40399 13.5366L8.87999 13ZM6.52453 9.64591C6.22847 9.35622 5.75362 9.36139 5.46393 9.65745C5.17424 9.95351 5.17941 10.4284 5.47547 10.718L6.52453 9.64591ZM14.524 8.53658C14.8203 8.24718 14.826 7.77234 14.5366 7.476C14.2472 7.17965 13.7723 7.17402 13.476 7.46342L14.524 8.53658ZM9.40452 12.4639L6.52453 9.64591L5.47547 10.718L8.35546 13.5361L9.40452 12.4639ZM9.40399 13.5366L14.524 8.53658L13.476 7.46342L8.35598 12.4634L9.40399 13.5366Z"
+          [attr.fill]="!isEditNow ? '#BCBCBC' : '#00BCD4'"
+        />
+      </svg>
+    </button>
+    <div
+      *ngIf="!isNew && !readonlyParam"
+      class="delete-button"
+      class="btnWrapper dfl jc"
+    >
+      <svg
+        (click)="deleteTask()"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3.5 6H16.5V17C16.5 18.1046 15.6046 19 14.5 19H5.5C4.39543 19 3.5 18.1046 3.5 17V6Z"
+          stroke="#BCBCBC"
+          stroke-width="1.5"
+        />
+        <path
+          d="M8 9V15"
+          stroke="#BCBCBC"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <path
+          d="M12 9V15"
+          stroke="#BCBCBC"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <path
+          d="M2 6H18V4.5C18 3.67157 17.3284 3 16.5 3H3.5C2.67157 3 2 3.67157 2 4.5V6Z"
+          stroke="#BCBCBC"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M8 3H12V2C12 1.44772 11.5523 1 11 1H9C8.44772 1 8 1.44772 8 2V3Z"
+          stroke="#BCBCBC"
+          stroke-width="1.5"
+        />
+      </svg>
+    </div>
+  </div>
+</form>
