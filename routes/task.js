@@ -5,7 +5,6 @@ const path = require("path");
 const DATA_PATH = path.join(__dirname, "../DB/tasks.json");
 // const errorHandler = require("../utils/errorHandler");
 
-
 // Получить все задачи
 // http://localhost:5000/api/tasks/getAll
 router.get("/getall", (req, res) => {
@@ -52,6 +51,7 @@ router.get("/:clientName", (req, res) => {
 //   "user": "63f1d6f5e3b0b4d5c8a1a23b",
 //   "formatTime": "11 hours"
 // }
+// Создать новую задачу
 router.post("/", (req, res) => {
   fs.readFile(DATA_PATH, "utf8", (err, data) => {
     if (err) return res.status(500).json({ message: "Error reading data" });
@@ -60,6 +60,9 @@ router.post("/", (req, res) => {
     const newTask = { id: Date.now(), ...req.body };
     tasks.push(newTask);
 
+    // Сортировка по `startDay`
+    tasks.sort((a, b) => new Date(a.startDay) - new Date(b.startDay));
+    tasks.reverse();
     fs.writeFile(DATA_PATH, JSON.stringify(tasks, null, 2), (err) => {
       if (err) return res.status(500).json({ message: "Error writing data" });
       res.status(201).json(newTask);
@@ -68,7 +71,6 @@ router.post("/", (req, res) => {
 });
 
 // Обновить задачу по ID
-// http://localhost:5000/api/tasks/12445457567567
 router.patch("/:id", (req, res) => {
   fs.readFile(DATA_PATH, "utf8", (err, data) => {
     if (err) return res.status(500).json({ message: "Error reading data" });
@@ -84,6 +86,9 @@ router.patch("/:id", (req, res) => {
 
     tasks[taskIndex] = { ...tasks[taskIndex], ...req.body };
 
+    // Сортировка по `startDay` после обновления
+    tasks.sort((a, b) => new Date(a.startDay) - new Date(b.startDay));
+    tasks.reverse();
     fs.writeFile(DATA_PATH, JSON.stringify(tasks, null, 2), (err) => {
       if (err) return res.status(500).json({ message: "Error writing data" });
       res.status(200).json(tasks[taskIndex]);
@@ -91,7 +96,6 @@ router.patch("/:id", (req, res) => {
   });
 });
 
-// http://localhost:5000/api/tasks/12312423534
 // Удалить задачу по ID
 router.delete("/:id", (req, res) => {
   fs.readFile(DATA_PATH, "utf8", (err, data) => {
@@ -99,6 +103,9 @@ router.delete("/:id", (req, res) => {
 
     let tasks = JSON.parse(data);
     tasks = tasks.filter((task) => task.id !== parseInt(req.params.id));
+    // Сортировка по `startDay`
+    tasks.sort((a, b) => new Date(a.startDay) - new Date(b.startDay));
+    tasks.reverse();
 
     fs.writeFile(DATA_PATH, JSON.stringify(tasks, null, 2), (err) => {
       if (err) return res.status(500).json({ message: "Error writing data" });

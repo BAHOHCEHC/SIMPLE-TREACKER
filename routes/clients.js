@@ -73,13 +73,15 @@ router.delete("/:id", async (req, res) => {
   try {
     const clients = await readData(CLIENTS_DATA_PATH);
     const tasks = await readData(TASKS_DATA_PATH);
+    // Фильтруем клиентов, удаляя клиента с переданным именем
+    const updatedClients = clients.filter(
+      (client) => client.name !== req.params.id
+    );
 
-    const updatedClients = clients.filter((client) => {
-      client.name !== req.params.id;
-    });
-    const updatedTasks = tasks.filter((task) => {
-      task.clientName !== req.params.id;
-    });
+    // Фильтруем задачи, удаляя задачи, связанные с клиентом
+    const updatedTasks = tasks.filter(
+      (task) => task.clientName !== req.params.id
+    );
 
     await writeData(CLIENTS_DATA_PATH, updatedClients);
     await writeData(TASKS_DATA_PATH, updatedTasks);

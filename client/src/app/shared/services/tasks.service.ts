@@ -17,12 +17,12 @@ export class TasksService {
     return this.http.get<Task[]>(`http://localhost:5000/api/tasks/getAll`);
   }
 
-  create(task: Task): Observable<Message> {
-    return this.http.post<Message>('http://localhost:5000/api/tasks/', task);
+  create(task: Task): Observable<Task> {
+    return this.http.post<Task>('http://localhost:5000/api/tasks/', task);
   }
 
-  update(task: Task): Observable<Message> {
-    return this.http.patch<Message>(`http://localhost:5000/api/tasks/${task.id}`, task);
+  update(task: Task): Observable<Task> {
+    return this.http.patch<Task>(`http://localhost:5000/api/tasks/${task.id}`, task);
   }
 
   delete(task: Task): Observable<Message> {

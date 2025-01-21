@@ -9,7 +9,6 @@ export interface User {
 }
 export interface Client {
   name: string;
-  imageSrc?: string;
   user?: string;
   tarif?: number;
   totalHours?: number;
@@ -23,13 +22,13 @@ export interface Client {
 export interface TaskDay {
   totalDayHour?: number;
   taskDayDate?: string;
+  fixDate?: string;
   tasksInDay: Task[] | [];
 }
 export interface Task {
   name: string;
   cost?: number;
   clientName?: string;
-  clientId?: string;
   startTime?: Date;
   endTime?: Date;
   startDay?: any;

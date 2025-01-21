@@ -6,7 +6,7 @@ import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { Task, Client, TaskDay } from '../../shared/interfaces';
 import { TasksService, ClientsService } from '../../shared/services';
-import { TaskRowComponent } from "../../shared/components/task-row/task-row.component";
+import { TaskRowComponent } from "../task-row/task-row.component";
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -79,9 +79,10 @@ export class TasksComponent implements OnInit, OnDestroy {
       tap(res => {
         this.totalHours = +res.reduce((acc, cur) => acc + (cur.wastedTime || 0), 0).toFixed(2);
         this.totalPayment = Math.round(this.totalHours / 60) * this.tarif;
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 3000)
+        // setTimeout(() => {
+        //   console.log('ddddddddd')
+        //   this.cdr.detectChanges();
+        // }, 3000)
         this.clientService
           .update(this.client.id, this.totalHours / 60, this.totalPayment)
           .subscribe();
@@ -132,8 +133,24 @@ export class TasksComponent implements OnInit, OnDestroy {
       console.error('Диапазон дат не задан.');
       return;
     }
-    const from = moment(this.bsRangeValue[0]).startOf('day').valueOf();
-    const to = moment(this.bsRangeValue[1]).endOf('day').valueOf();
+    const from = moment(this.bsRangeValue[0]).startOf('day');
+    const to = moment(this.bsRangeValue[1]).endOf('day');
+    const currentYear = moment().year(); // Текущий год
+
+    // Фильтрация массива PDFdataArray
+    const filteredData = this.PDFdataArray.filter((line) => {
+      // Преобразование текста в дату и установка текущего года
+      const lineDate = moment(line.text, 'dddd, D MMM').year(currentYear);
+
+      // Проверка попадания даты в диапазон
+      return lineDate.isBetween(from, to, undefined, '[]'); // [] - включает границы диапазона
+    });
+
+    console.log('Отфильтрованные данные:', filteredData);
+
+    // Если нужно обновить массив PDFdataArray
+    this.PDFdataArray = filteredData.reverse();
+
 
     let startPoint = 20;
     let currentPointY = 90;
@@ -172,10 +189,10 @@ export class TasksComponent implements OnInit, OnDestroy {
       doc.text(this.hourPipe.transform(this.totalHours) || '', 125, startPoint);
     }
     doc.setFont('Roboto', 'normal');
-    doc.text('Total payment:', 200, startPoint);
+    doc.text('Total payment:', 190, startPoint);
 
     doc.setFont('Roboto', 'bold');
-    doc.text(`${this.totalPayment?.toString() || '0'} ${this.currency || ''}`, 245, startPoint);
+    doc.text(`${this.totalPayment?.toString() || '0'} ${this.currency || ''}`, 255, startPoint);
     doc.text('$', 275, startPoint);
     doc.setFont('Roboto', 'normal');
     doc.text('Period:', 320, startPoint);

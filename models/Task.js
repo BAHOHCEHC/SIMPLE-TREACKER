@@ -17,10 +17,6 @@ const taskSchema = new Schema({
 	clientName: {
 		type: String
 	},
-	clientId: {
-		//по этому полю удаляется таски у клиента при удалении клиента
-		type: String
-	},
 	startTime: {
 		type: Date
 	},

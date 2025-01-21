@@ -159,7 +159,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   confirmDelete(): void {
-    const deletedClientId = this.deletedClient ? this.deletedClient.id : '';
+    const deletedClientId = this.deletedClient.name;
 
     if (deletedClientId) {
       this.clientsService
