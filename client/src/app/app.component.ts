@@ -7,6 +7,9 @@ import { Observable, Subject, tap } from 'rxjs';
 import { MaterialInstance, MaterialService } from './shared/classes/material.service';
 import { LoaderComponent } from './shared/components/loader/loader.component';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { AppState } from './store/app-store.module';
+import { GetAllClientOfUser } from './store/actions/client.action';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   message = '';
   clients$: Observable<Client[]> | undefined;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private store: Store<AppState>,) {
     this.user = {
       email: "Kateakane@gmail.com",
       password: "748159263Rr",
@@ -107,10 +110,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private getAllClients(): void {
     this.clients$ = this.clientsService.getAllClients().pipe(
       tap(clients => {
+        this.store.dispatch(new GetAllClientOfUser(clients));
+
         clients.forEach(client => {
           return this.clientsName.push(client.name.toLowerCase().replace(/\s/g, ''));
         });
-
       })
     );
   }

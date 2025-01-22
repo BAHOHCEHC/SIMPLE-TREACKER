@@ -87,7 +87,7 @@
     </div>
 
     <div class="task_spended_time tac color_black_text" *ngIf="!isNew">
-      {{ taskData?.wastedTime || 0 | hourPipe }}
+      {{ taskData.wastedTime || 0 | hourPipe }}
     </div>
 
     <button

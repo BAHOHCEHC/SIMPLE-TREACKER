@@ -67,7 +67,7 @@
       </span>
       <div class="day_time_wrap">
         <span class="fw_b_600 color_black_text day_total_header">Total:</span>
-        <span class="day_total_time">{{ days.totalDayHour || 0 | hourPipe }}</span>
+        <span class="day_total_time">{{ days.totalDayMinutes || 0 | hourPipe }}</span>
       </div>
     </h5>
     <div class="taskRow" *ngFor="let task of days.tasksInDay">

@@ -20,7 +20,7 @@ export interface Client {
 }
 
 export interface TaskDay {
-  totalDayHour?: number;
+  totalDayMinutes?: number;
   taskDayDate?: string;
   fixDate?: string;
   tasksInDay: Task[] | [];

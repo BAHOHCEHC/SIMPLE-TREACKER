@@ -15,6 +15,10 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import jsPDF from 'jspdf';
 import { roboroBold, robotoNormal } from '../../../assets/fonts';
 import { HourPipe } from '../../shared/pipes/hour.pipe';
+import { AppState } from '../../store/app-store.module';
+import { Store } from '@ngrx/store';
+import { GetCurrentClient } from '../../store/actions/client.action';
+import { GettingAllTasks } from '../../store/actions/tasks.action';
 
 
 @Component({
@@ -50,7 +54,7 @@ export class TasksComponent implements OnInit, OnDestroy {
     private taskService: TasksService,
     private route: ActivatedRoute,
     private clientService: ClientsService,
-    private cdr: ChangeDetectorRef
+    private store: Store<AppState>,
   ) {
     let initialStart = new Date();
     initialStart.setDate(1);
@@ -67,6 +71,7 @@ export class TasksComponent implements OnInit, OnDestroy {
           .getByName(this.clientName)
           .subscribe(client => {
             this.client = client;
+            this.store.dispatch(new GetCurrentClient(client));
             this.tarif = client.tarif ? client.tarif : 10;
             this.updateTasksList();
           });
@@ -79,13 +84,11 @@ export class TasksComponent implements OnInit, OnDestroy {
       tap(res => {
         this.totalHours = +res.reduce((acc, cur) => acc + (cur.wastedTime || 0), 0).toFixed(2);
         this.totalPayment = Math.round(this.totalHours / 60) * this.tarif;
-        // setTimeout(() => {
-        //   console.log('ddddddddd')
-        //   this.cdr.detectChanges();
-        // }, 3000)
-        this.clientService
-          .update(this.client.id, this.totalHours / 60, this.totalPayment)
-          .subscribe();
+
+        this.clientService.update(this.client.id, this.totalHours / 60, this.totalPayment)
+          .subscribe(res => {
+            this.store.dispatch(new GetCurrentClient(res));
+          });
       }),
       reduce((acc: TaskDay[], tasks: Task[]) => {
         tasks.forEach((task: Task) => {
@@ -98,11 +101,11 @@ export class TasksComponent implements OnInit, OnDestroy {
             exist.tasksInDay.push(task);
             exist.tasksInDay.sort((a, b) => moment(a.endTime).diff(moment(b.endTime)));
             // @ts-ignore
-            exist.totalDayHour += task.wastedTime || 0;
+            exist.totalDayMinutes += task.wastedTime || 0;
           } else {
             acc.push({
               taskDayDate: date,
-              totalDayHour: task.wastedTime || 0,
+              totalDayMinutes: task.wastedTime || 0,
               tasksInDay: [task],
             });
           }
@@ -113,7 +116,7 @@ export class TasksComponent implements OnInit, OnDestroy {
         this.PDFdataArray = res.map(day => ({
           text: day.taskDayDate,
           period: 'Total:',
-          time: day.totalDayHour,
+          time: day.totalDayMinutes,
           // @ts-ignore
           tasks: day.tasksInDay.map((task) => ({
             text: task.name,
@@ -121,6 +124,8 @@ export class TasksComponent implements OnInit, OnDestroy {
             time: this.hourPipe.transform(task.wastedTime),
           })),
         }));
+
+        this.store.dispatch(new GettingAllTasks(res));
       })
     );
   }
