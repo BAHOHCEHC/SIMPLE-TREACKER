@@ -489,7 +489,7 @@ svg.closeBtn {
 .statusBar {
   font-size: 18px;
   line-height: 23px;
-  padding: 0 40px;
+  padding: 0 30px;
 }
 
 .wrap {
@@ -501,7 +501,7 @@ h1.projectName {
   font-size: 32px;
 }
 .status_info {
-  flex-grow: 8;
+  flex-grow: 20;
 }
 .daterange {
   width: 200px;
@@ -921,3 +921,36 @@ input.bs-timepicker-field {
   line-height: 20px;
 }
 /* *********ReportsPage********** */
+
+
+[type="checkbox"].filled-in:checked+span:not(.lever):after {
+  top: 5px;
+  width: 15px;
+  height: 15px;
+}
+[type="checkbox"].filled-in+span:not(.lever):before, [type="checkbox"].filled-in+span:not(.lever):after {
+  content: '';
+  left: 5px;
+}
+[type="checkbox"].filled-in:checked+span:not(.lever):before {
+  top: 2px;
+  left: 4px;
+}
+[type="checkbox"].filled-in:checked+span:not(.lever):before {
+  top: 2px;
+  left: 4px;
+  width: 8px;
+  height: 13px;
+}
+[type="checkbox"].filled-in:not(:checked)+span:not(.lever):before {
+  left: 3px;
+  top: 10px;
+}
+[type="checkbox"].filled-in:not(:checked)+span:not(.lever):after {
+  height: 15px;
+  width: 15px;
+  top: 5px;
+}
+[type="checkbox"]+span:not(.lever) {
+  padding-left: 30px;
+}
