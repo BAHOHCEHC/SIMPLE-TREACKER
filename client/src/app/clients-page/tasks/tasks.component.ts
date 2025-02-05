@@ -19,7 +19,7 @@ import { AppState } from '../../store/app-store.module';
 import { Store } from '@ngrx/store';
 import { GetCurrentClient } from '../../store/actions/client.action';
 import { GettingAllTasks } from '../../store/actions/tasks.action';
-
+import { TasksState } from '../../store/reducers/tasks.reducers';
 
 @Component({
   selector: 'app-tasks',
@@ -50,11 +50,15 @@ export class TasksComponent implements OnInit, OnDestroy {
   fromFormat: Date | null = null;
   toFormat: Date | null = null;
 
+  hideInformation = true;
+
+  tasksss$: Observable<Task[]> | undefined;
+
   constructor(
     private taskService: TasksService,
     private route: ActivatedRoute,
     private clientService: ClientsService,
-    private store: Store<AppState>,
+    private store: Store<TasksState>,
   ) {
     let initialStart = new Date();
     initialStart.setDate(1);
@@ -63,6 +67,9 @@ export class TasksComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.tasksss$ = this.store.select('allDaysWithTasks');
+
+
     this.route.params
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -79,11 +86,14 @@ export class TasksComponent implements OnInit, OnDestroy {
 
   }
 
+  // 3) При добавлении задачи добавить функцию чтоб она обновляла страницу (или инициировать нажатие кнопки F5)
+  // 4) Рядом с датами добавить чекбокс "Hide Price" чтоб можно было вывести PDF без hour rate и total payment, Total hours поставить вначале, затем hour rate & total payment pdf
+
   updateTasksList(): void {
     this.allTasks$ = this.taskService.fetch(this.clientName).pipe(
       tap(res => {
         this.totalHours = +res.reduce((acc, cur) => acc + (cur.wastedTime || 0), 0).toFixed(2);
-        this.totalPayment = Math.round(this.totalHours / 60) * this.tarif;
+        this.totalPayment = this.totalHours * this.tarif / 60;
 
         this.clientService.update(this.client.id, this.totalHours / 60, this.totalPayment)
           .subscribe(res => {
@@ -132,6 +142,7 @@ export class TasksComponent implements OnInit, OnDestroy {
 
 
   goToStatistic(): void {
+
     if (this.bsRangeValue.length !== 2) {
       console.error('Диапазон дат не задан.');
       return;
@@ -172,7 +183,7 @@ export class TasksComponent implements OnInit, OnDestroy {
 
     doc.setFontSize(10);
     doc.setFont('Roboto', 'bold');
-    doc.text(this.userName || 'KATE AKANEMIKO', 20, startPoint);
+    doc.text(this.userName || 'Kateryna Hordymova', 20, startPoint);
     doc.setFont('Roboto', 'normal');
     doc.text('UX/UI designer', 595 - (('UX/UI designer'.length * 7) + 40), startPoint);
     startPoint += 20;
@@ -181,22 +192,35 @@ export class TasksComponent implements OnInit, OnDestroy {
     doc.setFont('Roboto', 'bold');
     doc.text(this.clientName || 'CLIENT NAME', 20, startPoint);
     startPoint += 20;
-
     doc.setFontSize(10);
-    doc.setFont('Roboto', 'normal');
-    doc.text(`${this.client?.tarif || 0} ${this.currency || ''} / hour`, 20, startPoint);
-    doc.text('Total hours:', 80, startPoint);
 
-    doc.setFont('Roboto', 'bold');
-    if (typeof this.totalHours === 'number') {
-      doc.text(this.hourPipe.transform(this.totalHours) || '', 125, startPoint);
+    if (!this.hideInformation) {
+      doc.setFont('Roboto', 'normal');
+      doc.text(`${this.client?.tarif || 0} ${this.currency || ''}$ / hour`, 20, startPoint);
     }
-    doc.setFont('Roboto', 'normal');
-    doc.text('Total payment:', 190, startPoint);
 
-    doc.setFont('Roboto', 'bold');
-    doc.text(`${this.totalPayment?.toString() || '0'} ${this.currency || ''}`, 255, startPoint);
-    doc.text('$', 275, startPoint);
+    if (this.hideInformation) {
+      doc.text('Total hours:', 20, startPoint);
+      doc.setFont('Roboto', 'bold');
+      if (typeof this.totalHours === 'number') {
+        doc.text(this.hourPipe.transform(this.totalHours) || '', 65, startPoint);
+      }
+    }else{
+      doc.text('Total hours:', 80, startPoint);
+      doc.setFont('Roboto', 'bold');
+      if (typeof this.totalHours === 'number') {
+        doc.text(this.hourPipe.transform(this.totalHours) || '', 125, startPoint);
+      }
+    }
+
+    if (!this.hideInformation) {
+      doc.setFont('Roboto', 'normal');
+      doc.text('Total payment:', 190, startPoint);
+      doc.setFont('Roboto', 'bold');
+      doc.text(`${this.totalPayment?.toString() || '0'} ${this.currency || ''}`, 255, startPoint);
+      doc.text('$', 275, startPoint);
+    }
+
     doc.setFont('Roboto', 'normal');
     doc.text('Period:', 320, startPoint);
 
@@ -211,7 +235,7 @@ export class TasksComponent implements OnInit, OnDestroy {
         doc.line(20, currentPointY - 10, 420, currentPointY - 10);
 
         // заголовок дня с тасками
-        currentPointY += 5;
+        currentPointY += 10;
         doc.setFontSize(12);
         doc.setFont('Roboto', 'bold');
         doc.text(line.text || '', 20, currentPointY);
@@ -222,7 +246,7 @@ export class TasksComponent implements OnInit, OnDestroy {
 
         // таски внутри дня
         line.tasks.forEach((e: { text: any; period: any; time: string | null; }) => {
-          currentPointY += 10;
+          currentPointY += 15;
           doc.setFontSize(10);
           doc.setFont('Roboto', 'normal');
           doc.text(e.text || '', 20, currentPointY);
@@ -235,7 +259,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       // НА ДРУГУЮ СТРАНИЦУ
       if (currentPointY >= 590) {
         doc.addPage();
-        currentPointY = 30;
+        currentPointY = 35;
         if (typeof line.time === 'number') {
           doc.setLineWidth(0.5);
           doc.line(20, currentPointY - 10, 420, currentPointY - 10);
