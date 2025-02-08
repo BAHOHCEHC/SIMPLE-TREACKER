@@ -91,7 +91,7 @@ export class TaskRowComponent implements OnInit, AfterViewInit {
 
   deleteTask() {
     this.taskService.delete(this.taskData).subscribe(response => {
-      this.taskEmitter.emit();
+      this.taskEmitter.emit(response);
     });
   }
 

@@ -1,5 +1,5 @@
 <div class="page-title">
-  <app-task-row [client]="client" (updateTasks)="updateTasksList()" [readonlyParam]="false"></app-task-row>
+  <app-task-row [client]="client" (updateTasks)="updateTasksList($event)" [readonlyParam]="false"></app-task-row>
 </div>
 
 <div class="statusBar">
@@ -57,7 +57,7 @@
     </h5>
     <div class="taskRow" *ngFor="let task of days.tasksInDay">
       <app-task-row [taskData]="task" [client]="client" [readonlyParam]="false"
-        (updateTasks)="updateTasksList()"></app-task-row>
+        (updateTasks)="updateTasksList($event)"></app-task-row>
     </div>
   </div>
 </div>

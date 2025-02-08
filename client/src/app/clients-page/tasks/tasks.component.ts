@@ -2,7 +2,7 @@ import moment from 'moment';
 import { Observable, Subject } from 'rxjs';
 import { reduce, takeUntil, tap } from 'rxjs/operators';
 
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Task, Client, TaskDay } from '../../shared/interfaces';
 import { TasksService, ClientsService } from '../../shared/services';
@@ -25,7 +25,9 @@ import { TasksState } from '../../store/reducers/tasks.reducers';
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   imports: [TaskRowComponent, HourPipe, CommonModule, FormsModule, LoaderComponent, BsDatepickerModule],
-
+  providers: [
+    { provide: 'Window', useValue: window },
+  ]
 })
 export class TasksComponent implements OnInit, OnDestroy {
   tokenId!: string | null;
@@ -53,12 +55,14 @@ export class TasksComponent implements OnInit, OnDestroy {
   hideInformation = true;
 
   tasksss$: Observable<Task[]> | undefined;
+  flag: boolean | undefined = false;
 
   constructor(
     private taskService: TasksService,
     private route: ActivatedRoute,
     private clientService: ClientsService,
     private store: Store<TasksState>,
+    @Inject('Window') private window: Window,
   ) {
     let initialStart = new Date();
     initialStart.setDate(1);
@@ -80,7 +84,7 @@ export class TasksComponent implements OnInit, OnDestroy {
             this.client = client;
             this.store.dispatch(new GetCurrentClient(client));
             this.tarif = client.tarif ? client.tarif : 10;
-            this.updateTasksList();
+            this.updateTasksList(undefined);
           });
       });
 
@@ -89,7 +93,7 @@ export class TasksComponent implements OnInit, OnDestroy {
   // 3) При добавлении задачи добавить функцию чтоб она обновляла страницу (или инициировать нажатие кнопки F5)
   // 4) Рядом с датами добавить чекбокс "Hide Price" чтоб можно было вывести PDF без hour rate и total payment, Total hours поставить вначале, затем hour rate & total payment pdf
 
-  updateTasksList(): void {
+  updateTasksList(event: any): void {
     this.allTasks$ = this.taskService.fetch(this.clientName).pipe(
       tap(res => {
         this.totalHours = +res.reduce((acc, cur) => acc + (cur.wastedTime || 0), 0).toFixed(2);
@@ -97,6 +101,7 @@ export class TasksComponent implements OnInit, OnDestroy {
 
         this.clientService.update(this.client.id, this.totalHours / 60, this.totalPayment)
           .subscribe(res => {
+            this.flag = true
             this.store.dispatch(new GetCurrentClient(res));
           });
       }),
@@ -138,6 +143,12 @@ export class TasksComponent implements OnInit, OnDestroy {
         this.store.dispatch(new GettingAllTasks(res));
       })
     );
+    if (this.flag && typeof event !== 'object') {
+      setTimeout(() => {
+        this.flag = false;
+        window.location.reload(); // Перезагрузка страницы
+      }, 1000)
+    }
   }
 
 
@@ -205,7 +216,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       if (typeof this.totalHours === 'number') {
         doc.text(this.hourPipe.transform(this.totalHours) || '', 65, startPoint);
       }
-    }else{
+    } else {
       doc.text('Total hours:', 80, startPoint);
       doc.setFont('Roboto', 'bold');
       if (typeof this.totalHours === 'number') {
