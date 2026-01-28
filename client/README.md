@@ -1,59 +1,185 @@
-# Client
+# Simple Tracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.1.
+**Кабінет для трекінгу виконаної роботи дизайнера** - веб-додаток для обліку робочого часу та управління задачами для дизайнерів та фрілансерів.
 
-## Development server
+## 📋 Опис проекту
 
-To start a local development server, run:
+Simple Tracker - це інструмент для відстеження виконаної роботи дизайнера, який дозволяє:
+- Управляти клієнтами та їх проектами
+- Відстежувати витрачений час на кожну задачу
+- Розраховувати вартість виконаних робіт
+- Експортувати звіти в PDF формат
+- Архівувати завершені проекти
 
+## 🛠 Технології
+
+### Backend
+- **Node.js** - серверне середовище
+- **Express.js** - веб-фреймворк для API
+- **Morgan** - логування HTTP запитів
+- **CORS** - обробка крос-доменних запросів
+- **Body-parser** - парсинг даних запитів
+- **Nodemon** - автоматичне перезавантаження сервера (dev)
+- **Concurrently** - одночасний запуск backend і frontend
+
+### Frontend
+- **Angular 19.1** - фреймворк для SPA
+- **TypeScript 5.7** - типізована мова програмування
+- **SCSS** - препроцесор CSS
+- **RxJS 7.8** - реактивне програмування
+- **NgRx Store 19.0** - управління станом додатку
+- **NgRx Effects 19.0** - обробка побічних ефектів
+- **Bootstrap 5.3** - CSS фреймворк
+- **Materialize CSS 1.0** - UI компоненти
+- **ngx-bootstrap 19.0** - Bootstrap компоненти для Angular
+- **jsPDF 2.5** - генерація PDF документів
+- **Moment.js 2.30** - робота з датами та часом
+
+### Зберігання даних
+- **JSON файли** - локальне зберігання даних (DB/clients.json, DB/tasks.json)
+
+## ✨ Основні можливості
+
+- ✅ **Управління клієнтами**: додавання, редагування, видалення клієнтів
+- ⏱ **Трекінг часу**: відстеження витраченого часу на задачі
+- 💰 **Розрахунок вартості**: автоматичний підрахунок вартості робіт
+- 📊 **Звіти**: перегляд статистики по клієнтам та задачам
+- 📄 **PDF експорт**: генерація звітів у форматі PDF за допомогою jsPDF
+- 🗄 **Архівування**: збереження історії завершених проектів
+- 🔍 **Фільтрація**: пошук та фільтрація задач по клієнтам
+
+## 📦 Встановлення
+
+### Вимоги
+- Node.js (версія 16 або вище)
+- npm (версія 8 або вище)
+
+### Кроки встановлення
+
+1. **Клонуйте репозиторій**
 ```bash
-ng serve
+git clone <repository-url>
+cd SIMPLE-TREACKER
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. **Встановіть залежності для backend**
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
+3. **Встановіть залежності для frontend**
 ```bash
-ng generate --help
+cd client
+npm install
+cd ..
 ```
 
-## Building
+## 🚀 Запуск проекту
 
-To build the project run:
+### Режим розробки (Development)
 
+Запуск backend та frontend одночасно:
 ```bash
-ng build
+npm run dev
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Після запуску:
+- **Frontend**: http://localhost:4200
+- **Backend API**: http://localhost:5000
 
-## Running unit tests
+### Окремий запуск
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
+**Тільки backend:**
 ```bash
-ng test
+npm run server
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
+**Тільки frontend:**
 ```bash
-ng e2e
+npm run client
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+**Production запуск:**
+```bash
+npm start
+```
 
-## Additional Resources
+## 📡 API Endpoints
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Clients API
+- `GET /api/clients` - отримати всіх клієнтів
+- `GET /api/clients/:name` - отримати клієнта по імені
+- `POST /api/clients` - створити нового клієнта
+- `PATCH /api/clients/:id` - оновити клієнта
+- `PATCH /api/clients/:id/achivetime` - оновити архівний час
+- `DELETE /api/clients/:id` - видалити клієнта
+
+### Tasks API
+- `GET /api/tasks/getall` - отримати всі задачі
+- `GET /api/tasks/:clientName` - отримати задачі по імені клієнта
+- `POST /api/tasks` - створити нову задачу
+- `PATCH /api/tasks/:id` - оновити задачу
+- `DELETE /api/tasks/:id` - видалити задачу
+
+## 📚 Структура проекту
+
+```
+SIMPLE-TREACKER/
+├── client/                 # Angular frontend
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── clients-page/    # Компоненти сторінки клієнтів
+│   │   │   ├── shared/          # Спільні компоненти
+│   │   │   └── store/           # NgRx store
+│   │   ├── assets/              # Статичні ресурси
+│   │   └── styles.scss          # Глобальні стилі
+│   └── package.json
+├── routes/                # Express маршрути
+│   ├── clients.js         # API для клієнтів
+│   └── task.js            # API для задач
+├── DB/                    # JSON база даних
+│   ├── clients.json
+│   └── tasks.json
+├── utils/                 # Утиліти
+├── app.js                 # Express додаток
+├── index.js               # Точка входу backend
+└── package.json           # Backend залежності
+```
+
+## 🔧 Скрипти
+
+### Root (Backend)
+- `npm start` - запуск production сервера
+- `npm run server` - запуск dev сервера з nodemon
+- `npm run client` - запуск Angular dev сервера
+- `npm run dev` - запуск backend + frontend одночасно
+
+### Client (Frontend)
+- `npm start` - запуск dev сервера з proxy
+- `npm run build` - збірка production версії
+- `npm run watch` - збірка з відстеженням змін
+
+## 📄 PDF Експорт
+
+Проект використовує бібліотеку **jsPDF** для генерації PDF звітів. Функціональність експорту дозволяє:
+- Створювати звіти по задачам клієнта
+- Включати інформацію про витрачений час
+- Розраховувати загальну вартість робіт
+- Зберігати звіти локально
+
+## 🤝 Внесок
+
+Якщо ви хочете внести свій внесок у проект:
+1. Створіть fork репозиторію
+2. Створіть нову гілку (`git checkout -b feature/amazing-feature`)
+3. Зробіть commit змін (`git commit -m 'Add amazing feature'`)
+4. Push в гілку (`git push origin feature/amazing-feature`)
+5. Створіть Pull Request
+
+## 📝 Ліцензія
+
+ISC
+
+## 👤 Автор
+
+BAHO
